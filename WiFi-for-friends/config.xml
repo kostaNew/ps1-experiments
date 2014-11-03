@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Root>
+	<Name>WiFi-for-friends</Name>
+	<!--min password length: 8-->
+	<Password>1234567890</Password>
+</Root>
