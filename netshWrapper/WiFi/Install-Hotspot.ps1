@@ -1,4 +1,4 @@
-function Up-Hotspot{
+function Install-Hotspot{
 	<#
     .SYNOPSIS
     Run system based hotspot 
@@ -19,31 +19,34 @@ function Up-Hotspot{
 		$PassUsage,
 		[String]
 		# Hotspot mode
-		$Mode,
+		$Mode
 	)
+
+    Set-StrictMode -Version 'Latest'
+    $ErrorActionPreference = "Stop"
 	
 	#Parameters checking
-	if ("persistent","temporary" -NotContains $PassUsage){
+	if ($PassUsage -and ("persistent","temporary" -NotContains $PassUsage)){
 		Write-Error "$($PassUsage) is not a valid value! Please use 'persistent' or 'temporary'"
 	}
 	
-	if ("allow","disallow" -NotContains $Mode){
+	if ($Mode -and ("allow","disallow" -NotContains $Mode)){
 		Write-Error "$($Mode) is not a valid value! Please use 'allow' or 'disallow'"
 	}
 	
-	if (($Password.length -ge 8) -and ($Password.length -le 23)){
-		Write-Error "$($Password) is not a valid value! Please use 6-23 symbols"
+	if ($Password -and ($Password.length -lt 8) -and ($Password.length -gt 63)){
+		Write-Error "$($Password) is not a valid value! Please use 8-63 symbols"
 	}
 	
 	
 	#Construct run string
 	$command = "netsh wlan set hostednetwork "
-	if ($Mode) $command  += "mode=$($Mode) "
-	if ($Name) $command  += "ssid=$($Name) "
-	if ($Password) $command  += "key=$($Password) "
-	if ($PassUsage) $command  += "keyUsage=$($PassUsage)"
+	if ($Mode) {$command  += "mode=$($Mode) "}
+	if ($Name) {$command  += "ssid=$($Name) "}
+	if ($Password) {$command  += "key=$($Password) "}
+	if ($PassUsage) {$command  += "keyUsage=$($PassUsage)"}
 	
-	& $command
+	Invoke-Expression $command
 	if( $LastExitCode -ne 0 )
 	{
 		Write-Error "'netsh wlan set hostednetwork' failed and returned '$LastExitCode'."
